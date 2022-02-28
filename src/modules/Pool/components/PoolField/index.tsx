@@ -2,6 +2,7 @@ import * as React from 'react'
 import classNames from 'classnames'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
+import BigNumber from 'bignumber.js'
 
 import { Icon } from '@/components/common/Icon'
 import { TokenIcon } from '@/components/common/TokenIcon'
@@ -42,6 +43,15 @@ function Field({
         dexAccountBalance,
     })
 
+    const isInsufficientBalance = React.useMemo(
+        () => new BigNumber(props.value ?? 0).gt(balance.value),
+        [props.value, balance.value],
+    )
+
+    const onMax = () => {
+        props.onChange?.(balance.value)
+    }
+
     return (
         <fieldset
             className={classNames('form-fieldset', {
@@ -51,9 +61,18 @@ function Field({
             })}
         >
             <div className="form-fieldset__header">
-                <div>{props.label}</div>
+                <div
+                    className={classNames({
+                        'text-muted': !isInsufficientBalance,
+                        'text-danger': isInsufficientBalance,
+                    })}
+                >
+                    {isInsufficientBalance ? intl.formatMessage({
+                        id: 'POOL_INSUFFICIENT_TOKEN_BALANCE',
+                    }) : props.label}
+                </div>
                 {token && (
-                    <div>
+                    <div className="text-muted">
                         {intl.formatMessage({
                             id: 'POOL_FIELD_TOKEN_WALLET_BALANCE',
                         }, {
@@ -75,7 +94,18 @@ function Field({
                     onChange={field.onChange}
                     onKeyPress={props.onKeyPress}
                 />
-                {!token ? (
+                {token !== undefined && (
+                    <button
+                        key="max-button"
+                        type="button"
+                        className="btn btn-xs btn-secondary form-btn-max"
+                        disabled={props.disabled}
+                        onClick={onMax}
+                    >
+                        Max
+                    </button>
+                )}
+                {token === undefined ? (
                     <button
                         type="button"
                         className={classNames('btn form-select', {

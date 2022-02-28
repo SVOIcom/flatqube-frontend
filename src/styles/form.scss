@@ -92,7 +92,6 @@
         letter-spacing: 0.75px;
         line-height: 20px;
         margin-bottom: 4px;
-        opacity: 0.64;
     }
 
     &__main {
@@ -308,4 +307,11 @@ button.form-submit {
         background: none !important;
         cursor: not-allowed !important;
     }
+}
+
+.btn.form-btn-max {
+    line-height: 24px;
+    margin: 0 12px;
+    min-height: 24px;
+    padding: 0 10px;
 }
